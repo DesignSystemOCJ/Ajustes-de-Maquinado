@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bloques y Celdas - UI Premium</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Estilos CSS Personalizados si los requieres -->
+  <link rel="stylesheet" href="appmaquinado.css">
+</head>
+<body class="bg-slate-50 text-slate-800 p-4 sm:p-6 min-h-screen">
+
+  <div class="max-w-[98%] mx-auto space-y-6">
+    
+    <!-- 1. HEADER SUPERIOR GLOBAL -->
+    <header class="bg-white px-6 py-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-blue-600 ring-4 ring-blue-100"></span> 
+          Distribución de Bloques y Celdas
+        </h1>
+        <p class="text-xs text-slate-500 mt-0.5">
+          Pase el mouse sobre un bloque para desplegar sus celdas, haga clic en una celda para subir documentos y ver su historial.
+        </p>
+      </div>
+      
+      <!-- Botón de retorno -->
+      <div class="flex items-center gap-3">
+        <a href="appmaquinado.html" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3.5 py-2 rounded-xl text-xs transition border border-slate-200 flex items-center gap-1.5 shadow-2xs">
+          ⬅️ Volver a Diagnóstico
+        </a>
+      </div>
+    </header>
+
+    <!-- 2. CONTENEDOR EN UNA SOLA LÍNEA SIN SCROLL Y TARJETAS MÁS ALTAS -->
+    <div class="grid grid-cols-9 gap-2.5 pt-1 items-start" id="contenedorBloques">
+
+      <!-- BLOQUE 1 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque1Detalle', this)" onmouseleave="ocultarBloque('bloque1Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 1</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celda individual de control primario.</p>
+        </div>
+        <div id="bloque1Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C01|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition">
+            <span class="text-xs font-bold text-slate-700">|C01|</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 2 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque2Detalle', this)" onmouseleave="ocultarBloque('bloque2Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 2</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 2 y 3.</p>
+        </div>
+        <div id="bloque2Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C02|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C02|</span></div>
+          <div onclick="seleccionarCelda('|C03|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C03|</span></div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 3 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque3Detalle', this)" onmouseleave="ocultarBloque('bloque3Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 3</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 4 y 5.</p>
+        </div>
+        <div id="bloque3Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C04|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C04|</span></div>
+          <div onclick="seleccionarCelda('|C05|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C05|</span></div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 4 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque4Detalle', this)" onmouseleave="ocultarBloque('bloque4Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 4</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 6, 16, 33 y 34.</p>
+        </div>
+        <div id="bloque4Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C06|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C06|</span></div>
+          <div onclick="seleccionarCelda('|C16|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C16|</span></div>
+          <div onclick="seleccionarCelda('|C33|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C33|</span></div>
+          <div onclick="seleccionarCelda('|C34|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C34|</span></div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 5 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque5Detalle', this)" onmouseleave="ocultarBloque('bloque5Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 5</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 7, 8, 12, 13, 17 y 18.</p>
+        </div>
+        <div id="bloque5Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C07|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C07|</span></div>
+          <div onclick="seleccionarCelda('|C08|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C08|</span></div>
+          <div onclick="seleccionarCelda('|C12|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C12|</span></div>
+          <div onclick="seleccionarCelda('|C13|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C13|</span></div>
+          <div onclick="seleccionarCelda('|C17|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C17|</span></div>
+          <div onclick="seleccionarCelda('|C18|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C18|</span></div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 6 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque6Detalle', this)" onmouseleave="ocultarBloque('bloque6Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 6</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 9, 10, 14, 15, 19 y 20.</p>
+        </div>
+        <div id="bloque6Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C09|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C09|</span></div>
+          <div onclick="seleccionarCelda('|C10|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C10|</span></div>
+          <div onclick="seleccionarCelda('|C14|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C14|</span></div>
+          <div onclick="seleccionarCelda('|C15|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C15|</span></div>
+          <div onclick="seleccionarCelda('|C19|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C19|</span></div>
+          <div onclick="seleccionarCelda('|C20|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C20|</span></div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 7 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque7Detalle', this)" onmouseleave="ocultarBloque('bloque7Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 7</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 21, 26, 35 y 36.</p>
+        </div>
+        <div id="bloque7Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C21|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C21|</span></div>
+          <div onclick="seleccionarCelda('|C26|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C26|</span></div>
+          <div onclick="seleccionarCelda('|C35|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C35|</span></div>
+          <div onclick="seleccionarCelda('|C36|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C36|</span></div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 8 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque8Detalle', this)" onmouseleave="ocultarBloque('bloque8Detalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 8</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 22, 23, 27 y 28.</p>
+        </div>
+        <div id="bloque8Detalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C22|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C22|</span></div>
+          <div onclick="seleccionarCelda('|C23|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C23|</span></div>
+          <div onclick="seleccionarCelda('|C27|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C27|</span></div>
+          <div onclick="seleccionarCelda('|C28|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C28|</span></div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 9 -->
+      <div class="bloque-card bg-white rounded-xl p-3.5 shadow-sm border border-slate-100 hover:border-blue-300 transition flex flex-col justify-between min-h-[140px] cursor-pointer group min-w-0" onmouseenter="mostrarBloque('bloque7bDetalle', this)" onmouseleave="ocultarBloque('bloque7bDetalle', this)">
+        <div class="text-center">
+          <h3 class="font-bold text-slate-900 text-sm">Bloque 9</h3>
+          <p class="text-xs text-slate-500 mt-1 leading-tight">Celdas 24, 25, 29 y 30.</p>
+        </div>
+        <div id="bloque7bDetalle" class="bloque-detalle hidden flex flex-col gap-1.5 pt-2 border-t border-slate-100 mt-2">
+          <div onclick="seleccionarCelda('|C24|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C24|</span></div>
+          <div onclick="seleccionarCelda('|C25|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C25|</span></div>
+          <div onclick="seleccionarCelda('|C29|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C29|</span></div>
+          <div onclick="seleccionarCelda('|C30|', event)" class="bg-slate-50 hover:bg-blue-50 hover:border-blue-300 border border-slate-200 py-2 px-1 rounded-lg text-center transition"><span class="text-xs font-bold text-slate-700">|C30|</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 3. SECCIÓN DE GESTIÓN DE DOCUMENTOS Y TABLA HISTÓRICA -->
+    <section id="seccionDocumentos" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mt-8 hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-slate-100">
+        <div>
+          <span class="text-[10px] font-bold text-emerald-600 uppercase bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">Celda Activa</span>
+          <h2 id="tituloCeldaActiva" class="text-lg font-bold text-slate-900 mt-1">Celda Seleccionada: Ninguna</h2>
+        </div>
+        <button onclick="cerrarSeccionDocumentos()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-3 py-2 rounded-xl transition">
+          ✕ Cerrar Panel
+        </button>
+      </div>
+
+      <!-- Formulario para subir archivo -->
+      <div class="my-6 bg-slate-50 p-5 rounded-xl border border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-bold text-slate-700 mb-1.5">Seleccionar Documento (PDF, Imagen, Word, etc.)</label>
+          <input type="file" id="inputArchivo" class="w-full text-xs text-slate-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer bg-white border border-slate-200 rounded-xl py-3 px-3">
+        </div>
+        <div>
+          <button onclick="guardarDocumento()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-3 px-4 rounded-xl transition shadow-sm">
+            💾 Guardar Documento
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de Datos Históricos -->
+      <div>
+        <h3 class="font-bold text-slate-900 text-sm mb-3 flex items-center justify-between">
+          <span>Historial de Documentos Guardados</span>
+          <span class="text-xs font-normal text-slate-400">Ordenado del más reciente al más antiguo</span>
+        </h3>
+        <div class="overflow-x-auto border border-slate-200 rounded-xl">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-100/75 text-slate-600 text-[11px] font-bold uppercase tracking-wider border-b border-slate-200">
+                <th class="py-3 px-4">ID</th>
+                <th class="py-3 px-4">Celda</th>
+                <th class="py-3 px-4">Nombre del Documento</th>
+                <th class="py-3 px-4">Fecha y Hora de Guardado</th>
+                <th class="py-3 px-4 text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaHistorialBody" class="divide-y divide-slate-100 text-xs">
+              <!-- Se llena dinámicamente con JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- SCRIPT CONECTADO A SUPABASE (BASE DE DATOS + STORAGE BUCKET 'dimens') -->
+  <script>
+    const SUPABASE_URL = 'https://oycvzlnwwhpdlmmofrhd.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_1NwNxqZ7zkQXIFRUkn6G3A_RGIdZbHP';
+    
+    const { createClient } = supabase;
+    const _supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    let celdaSeleccionadaActual = '';
+
+    function mostrarBloque(idDetalleTarget, cardElementTarget) {
+      const detalleTarget = document.getElementById(idDetalleTarget);
+      if (detalleTarget) {
+        detalleTarget.classList.remove('hidden');
+      }
+      cardElementTarget.classList.add('ring-2', 'ring-blue-400', 'border-blue-300', 'z-10');
+    }
+
+    function ocultarBloque(idDetalleTarget, cardElementTarget) {
+      const detalleTarget = document.getElementById(idDetalleTarget);
+      if (detalleTarget) {
+        detalleTarget.classList.add('hidden');
+      }
+      cardElementTarget.classList.remove('ring-2', 'ring-blue-400', 'border-blue-300', 'z-10');
+    }
+
+    function seleccionarCelda(nombreCelda, event) {
+      event.stopPropagation();
+      celdaSeleccionadaActual = nombreCelda;
+      
+      const seccion = document.getElementById('seccionDocumentos');
+      seccion.classList.remove('hidden');
+      
+      document.getElementById('tituloCeldaActiva').textContent = `Celda Seleccionada: ${nombreCelda}`;
+      document.getElementById('inputArchivo').value = '';
+
+      renderizarTablaHistorial();
+      seccion.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function cerrarSeccionDocumentos() {
+      document.getElementById('seccionDocumentos').classList.add('hidden');
+      celdaSeleccionadaActual = '';
+    }
+
+    async function guardarDocumento() {
+      const input = document.getElementById('inputArchivo');
+      if (!input.files || input.files.length === 0) {
+        alert('Por favor selecciona un documento antes de guardar.');
+        return;
+      }
+
+      const archivo = input.files[0];
+      const ahora = new Date();
+      
+      // Nombre único para el bucket 'dimens'
+      const nombreUnico = `${Date.now()}_${archivo.name.replace(/\s+/g, '_')}`;
+
+      // 1. SUBIR EL ARCHIVO AL BUCKET 'dimens'
+      const { data: storageData, error: storageError } = await _supabase.storage
+        .from('dimens')
+        .upload(nombreUnico, archivo);
+
+      if (storageError) {
+        console.error('Error al subir el archivo al bucket:', storageError);
+        alert('Hubo un error al subir el archivo físico al bucket "dimens".');
+        return;
+      }
+
+      // 2. CONSTRUCCIÓN EXACTA DE LA URL PÚBLICA PARA ABRIR EL ARCHIVO
+      const urlArchivo = `${SUPABASE_URL}/storage/v1/object/public/dimens/${nombreUnico}`;
+
+      const fechaFormateada = ahora.toLocaleString('es-MX', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+
+      // 3. GUARDAR LOS DATOS Y LA URL EN LA TABLA 'historial_celdas'
+      const nuevoRegistro = {
+        celda: celdaSeleccionadaActual,
+        nombre_archivo: archivo.name,
+        fecha_original: ahora.getTime(),
+        fecha_str: fechaFormateada,
+        url_archivo: urlArchivo
+      };
+
+      const { error: dbError } = await _supabase
+        .from('historial_celdas')
+        .insert([nuevoRegistro]);
+
+      if (dbError) {
+        console.error('Error al guardar en la base de datos:', dbError);
+        alert('El archivo se subió al bucket, pero falló al registrarse en la base de datos.');
+        return;
+      }
+
+      input.value = '';
+      
+      // 4. ACTUALIZAR AUTOMÁTICAMENTE LA TABLA DE HISTORIAL EN PANTALLA
+      renderizarTablaHistorial();
+      alert('¡Documento guardado exitosamente y disponible en el historial!');
+    }
+
+    async function renderizarTablaHistorial() {
+      const tbody = document.getElementById('tablaHistorialBody');
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">Cargando historial...</td></tr>`;
+
+      const { data: historial, error } = await _supabase
+        .from('historial_celdas')
+        .select('*')
+        .eq('celda', celdaSeleccionadaActual)
+        .order('fecha_original', { ascending: false });
+
+      if (error) {
+        console.error('Error al cargar historial:', error);
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-rose-500">Error al cargar los datos.</td></tr>`;
+        return;
+      }
+
+      if (!historial || historial.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">No hay documentos guardados para esta celda todavía.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      historial.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/80 transition';
+        
+        // Conversión del nombre del archivo en un enlace que abre en otra ventana usando url_archivo
+        let enlaceArchivo = item.nombre_archivo;
+        if (item.url_archivo) {
+          enlaceArchivo = `<a href="${item.url_archivo}" target="_blank" class="text-blue-600 hover:underline font-semibold flex items-center gap-1">📄 ${item.nombre_archivo} ↗</a>`;
+        }
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono text-slate-500">${item.id}</td>
+          <td class="py-3 px-4"><span class="bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-lg border border-blue-100">${item.celda}</span></td>
+          <td class="py-3 px-4 text-slate-900">${enlaceArchivo}</td>
+          <td class="py-3 px-4 font-medium text-slate-600">${item.fecha_str}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="eliminarRegistro(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold text-xs bg-rose-50 hover:bg-rose-100 px-2.5 py-1.5 rounded-lg transition flex items-center justify-center gap-1 mx-auto">🗑️ Eliminar</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function eliminarRegistro(id) {
+      if (confirm('¿Estás seguro de eliminar este registro?')) {
+        const { error } = await _supabase
+          .from('historial_celdas')
+          .delete()
+          .eq('id', id);
+
+        if (error) {
+          console.error('Error al eliminar:', error);
+          alert('No se pudo eliminar el registro.');
+          return;
+        }
+
+        renderizarTablaHistorial();
+      }
+    }
+  </script>
+
+</body>
+</html>

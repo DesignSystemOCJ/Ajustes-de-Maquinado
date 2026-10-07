@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico de Características - UI Premium</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase JS Client CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Estilos CSS Personalizados -->
+  <link rel="stylesheet" href="appmaquinado.css">
+</head>
+<body class="p-4 sm:p-6">
+
+  <!-- Contenedor principal ampliado (max-w-full con un padding horizontal reducido) -->
+  <div class="max-w-[98%] mx-auto space-y-6">
+    
+    <!-- 1. HEADER SUPERIOR GLOBAL -->
+    <header class="bg-white px-6 py-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold text-slate-900 flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-blue-600 ring-4 ring-blue-100"></span> 
+          Diagnóstico de Características
+        </h1>
+      </div>
+      
+      <!-- Controles de Autenticación -->
+      <div class="flex items-center gap-3 self-end sm:self-center">
+        <div id="userInfoContainer" class="hidden text-xs text-slate-600 font-semibold bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200">
+          Sesión: <span id="userEmailSpan" class="text-slate-900"></span>
+        </div>
+        <button type="button" id="authBtn" onclick="manejarBotonAuth()" class="bg-slate-900 hover:bg-blue-600 text-white font-bold px-3 py-2 rounded-xl text-sm transition shadow-sm" title="Iniciar Sesión">
+          🔑
+        </button>
+      </div>
+    </header>
+
+    <!-- 2. GRID PRINCIPAL -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- COLUMNA IZQUIERDA -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-5">
+        
+        <!-- Modelo, Cliente y Tamaño en una línea -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-50/70 p-3.5 rounded-xl border border-slate-200/60">
+          <div class="relative">
+            <label class="text-[10px] uppercase font-bold text-slate-600 block mb-1">Modelo</label>
+            <input type="text" id="modeloSelect" placeholder="Escriba para filtrar..." class="w-full bg-white border border-slate-200 rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off" />
+            <!-- Contenedor dinámico o lista flotante personalizada con botón + -->
+            <div id="dropdownModelosPersonalizado" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto z-50"></div>
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-slate-600 block mb-1">Cliente</label>
+            <input type="text" id="clienteInput" value="" readonly class="w-full bg-slate-100/70 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-600 outline-none cursor-not-allowed" />
+          </div>
+          <div>
+            <label class="text-[10px] uppercase font-bold text-slate-600 block mb-1">Tamaño</label>
+            <input type="text" id="tamanioInput" value="" readonly class="w-full bg-slate-100/70 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-600 outline-none cursor-not-allowed" />
+          </div>
+        </div>
+
+        <!-- 3 Cards de Operaciones -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div id="cardOp1" onclick="seleccionarOperacion('OP1')" class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs hover:border-blue-300 transition cursor-pointer flex flex-col justify-between">
+            <span class="text-[10px] font-bold text-slate-600 uppercase">Op 1</span>
+            <span class="text-xs font-bold text-slate-800 mt-1">Primera Operación</span>
+          </div>
+          <div id="cardOp2" onclick="seleccionarOperacion('OP2')" class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs hover:border-blue-300 transition cursor-pointer flex flex-col justify-between">
+            <span class="text-[10px] font-bold text-slate-600 uppercase">Op 2</span>
+            <span class="text-xs font-bold text-slate-800 mt-1">Segunda Operación</span>
+          </div>
+          <div id="cardOp3" onclick="seleccionarOperacion('OP3')" class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-2xs hover:border-blue-300 transition cursor-pointer flex flex-col justify-between">
+            <span class="text-[10px] font-bold text-slate-600 uppercase">Op 3</span>
+            <span class="text-xs font-bold text-slate-800 mt-1">Operación Drill</span>
+          </div>
+        </div>
+
+        <!-- Campos: Característica y Medición -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1.5">Element Name</label>
+            <input type="text" id="elementNameSelect" list="listaElementos" placeholder="Seleccione una operación..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm text-slate-800 focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition" />
+            <datalist id="listaElementos">
+              <option value="Seleccione una operación...">
+            </datalist>
+          </div>
+          <div class="relative">
+            <label class="text-xs font-semibold text-slate-600 block mb-1.5">Medición actual</label>
+            <div class="flex items-center gap-2">
+              <div class="relative flex items-center flex-1">
+                <input type="text" id="medicionInput" value="" placeholder="" readonly onclick="abrirTeclado()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-bold rounded-xl px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer" />
+                <span class="absolute right-3.5 text-xs font-medium text-slate-400 pointer-events-none">mm ⌨️</span>
+              </div>
+              <button type="button" id="btnAjustar" onclick="mostrarContenidoAjustes()" class="bg-slate-900 hover:bg-blue-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm whitespace-nowrap">
+                Ajustar
+              </button>
+              <button type="button" id="btnDimensional" onclick="togglePanelDimensional(event)" class="bg-slate-900 hover:bg-blue-600 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm whitespace-nowrap">
+                Dimensional
+              </button>
+            </div>
+
+            <!-- Mini Teclado Numérico (Generado Dinámicamente desde JS) -->
+            <div id="miniTeclado" class="hidden absolute left-0 right-0 top-full mt-2 bg-white border border-slate-200 rounded-2xl shadow-2xl p-3 z-50">
+              <div class="flex justify-between items-center mb-2 px-1">
+                <span class="text-[11px] font-bold text-slate-500">Ingrese Medición</span>
+                <button type="button" onclick="cerrarTeclado()" class="text-slate-400 hover:text-slate-700 text-xs font-bold px-1.5 py-0.5 rounded bg-slate-100">✕</button>
+              </div>
+              <div id="gridTecladoContainer" class="grid grid-cols-3 gap-1.5 text-sm font-bold text-slate-700 mb-2"></div>
+              <button type="button" onclick="confirmarMedicion()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-sm">
+                OK / Aceptar
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tarjetas de Especificación -->
+        <div class="space-y-2">
+          <div class="bg-slate-50/80 p-4 rounded-xl border border-slate-200/70 grid grid-cols-4 gap-2 text-center">
+            <div class="p-1">
+              <span class="text-[10px] uppercase tracking-wider text-slate-600 font-semibold block mb-0.5">Mínima</span>
+              <span class="text-sm font-bold text-slate-700">-</span>
+            </div>
+            <div class="p-1">
+              <span class="text-[10px] uppercase tracking-wider text-slate-600 font-semibold block mb-0.5">Nominal</span>
+              <span class="text-sm font-bold text-slate-700">-</span>
+            </div>
+            <div class="p-1">
+              <span class="text-[10px] uppercase tracking-wider text-slate-600 font-semibold block mb-0.5">Máxima</span>
+              <span class="text-sm font-bold text-slate-700">-</span>
+            </div>
+            <div class="p-1 border-l border-slate-200 pl-2">
+              <span class="text-[10px] uppercase tracking-wider text-slate-600 font-semibold block mb-0.5">Desviación</span>
+              <span id="desviacionVal" class="text-sm font-bold text-slate-700">-</span>
+              <span class="text-[9px] text-slate-400 block leading-tight mt-0.5"></span>
+            </div>
+          </div>
+
+          <!-- ESTADO DE ESPECIFICACIÓN -->
+          <div id="estadoEspecificacionCard" class="hidden px-4 py-2.5 rounded-xl text-xs font-bold text-center border transition shadow-2xs">
+            <span id="estadoEspecificacionTexto">-</span>
+          </div>
+        </div>
+
+        <!-- VISTA INICIAL: Imagen del Rin -->
+        <div id="vistaInicialRinContainer" class="bg-gradient-to-b from-slate-50 to-slate-100/50 rounded-2xl p-4 border border-slate-200/80 flex flex-col gap-3">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex-1">
+              <label class="text-[10px] uppercase font-bold text-slate-600 block mb-1">Parte del rin</label>
+              <input type="text" id="parteRinInput" readonly placeholder="Se autocompletará con Element Name..." class="w-full bg-slate-100/70 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-600 outline-none cursor-not-allowed" />
+            </div>
+            <button type="button" id="btnMapearContainer" onclick="mostrarContenedorMapeo()" class="hidden mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-sm items-center gap-1.5 whitespace-nowrap">
+              📍 Mapear
+            </button>
+          </div>
+          <div class="relative w-full h-[320px] flex items-center justify-center overflow-hidden rounded-lg bg-white/50 border border-slate-200/60 p-2">
+            <img src="https://designsystemocj.github.io/SMRSytem-DashBoard/rin.JPG" alt="Imagen del Rin" class="max-h-full max-w-full object-contain select-none pointer-events-none">
+            <div id="puntosVistaInicialLayer" class="absolute inset-0 pointer-events-none"></div>
+          </div>
+        </div>
+
+        <!-- Visualizador Independiente de Mapa de Puntos del Rin -->
+        <div id="mapaRinContenedorCompleto" class="hidden relative bg-gradient-to-b from-slate-50 to-slate-100/50 rounded-2xl p-4 border border-slate-200/80 flex flex-col items-center justify-between h-[420px]">
+          <div class="flex items-center justify-between w-full mb-2 bg-white px-3 py-2 rounded-xl border border-slate-200/70 shadow-2xs gap-2">
+            <button type="button" onclick="ocultarContenedorMapeo()" class="text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-2 py-1 rounded-lg border border-slate-200 transition" title="Volver">
+              ⬅️
+            </button>
+            <div class="flex items-center gap-2 flex-1">
+              <label class="text-[10px] uppercase font-bold text-slate-600">Datos:</label>
+              <input type="text" id="listaDatosMapaInput" list="listaDatosMapa" placeholder="Escriba o seleccione..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500" />
+              <datalist id="listaDatosMapa">
+                <option value="Opción 1">
+                <option value="Opción 2">
+              </datalist>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-700">Modo:</span>
+              <select id="modoPuntosSelect" onchange="cambiarModoPuntos()" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1 text-xs font-semibold text-slate-800 outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="1">1 Punto</option>
+                <option value="2">2 Puntos</option>
+              </select>
+            </div>
+            <button type="button" onclick="limpiarPuntosMapa()" class="text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg border border-red-200 transition">
+              Limpiar Puntos
+            </button>
+          </div>
+
+          <div id="mapaRinContainer" class="relative cursor-crosshair w-full h-full flex items-center justify-center overflow-hidden rounded-lg bg-white/50 border border-slate-200/60" onclick="colocarPuntoMapa(event)">
+            <img src="https://designsystemocj.github.io/SMRSytem-DashBoard/rin.JPG" alt="Mapa del Rin" class="max-h-full max-w-full w-full h-full object-contain select-none pointer-events-none">
+            <div id="puntosMapaLayer" class="absolute inset-0 pointer-events-none"></div>
+          </div>
+
+          <button type="button" onclick="guardarPuntosSupabase()" class="mt-3 w-full bg-slate-900 hover:bg-blue-600 text-white font-bold py-2 rounded-xl text-xs transition shadow-sm">
+            💾 Guardar Posicionamiento en Supabase
+          </button>
+        </div>
+
+      </div>
+
+      <!-- COLUMNA DERECHA -->
+      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-5">
+        
+        <!-- Contenedor 1: Ajustes recomendados -->
+        <div id="seccionAjustesOriginal" class="flex flex-col gap-5">
+          <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shadow-2xs">🛠️</div>
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm">Ajustes recomendados</h3>
+              <p class="text-xs text-slate-400">Sugerencia inteligente basada en modelo dimensional</p>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-center justify-between transition hover:border-slate-300">
+            <div class="flex items-center gap-3.5">
+              <span class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-sm shadow-sm shadow-blue-200">Z</span>
+              <div>
+                <span class="text-xs text-slate-400 font-medium block">Parámetro / Ajuste</span>
+                <span class="text-base font-bold text-slate-900">-</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl font-semibold border border-slate-200 block">
+                Objetivo: -
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-amber-50/50 border border-amber-200/70 rounded-2xl p-4">
+            <div class="flex items-center gap-2 text-amber-900 font-bold text-xs mb-1.5">
+              <span>⚠</span> Posibles afectaciones
+            </div>
+            <p class="text-xs text-slate-600 mb-3">Realizar el ajuste puede afectar las siguientes características:</p>
+            
+            <div class="space-y-2">
+              <div class="bg-white p-3 rounded-xl border border-amber-100 flex items-center justify-between text-xs shadow-2xs">
+                <span class="font-semibold text-slate-800 flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Rim Width
+                </span>
+                <span class="text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg font-medium text-[10px] border border-amber-100">Pendiente</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-amber-100 flex items-center justify-between text-xs shadow-2xs">
+                <span class="font-semibold text-slate-800 flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Cap Depth
+                </span>
+                <span class="text-amber-800 bg-amber-50 px-2.5 py-1 rounded-lg font-medium text-[10px] border border-amber-100">Pendiente</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4">
+            <div class="flex items-center gap-2 text-slate-900 font-bold text-xs mb-3">
+              <span>✅</span> Después del ajuste, verificar:
+            </div>
+            <div class="space-y-2 text-xs text-slate-700 font-medium">
+              <label class="flex items-center gap-2.5 cursor-pointer bg-white p-2.5 rounded-xl border border-slate-200/60 hover:bg-slate-100/50 transition">
+                <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"> 
+                OB Flange Thickness After Casting
+              </label>
+              <label class="flex items-center gap-2.5 cursor-pointer bg-white p-2.5 rounded-xl border border-slate-200/60 hover:bg-slate-100/50 transition">
+                <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"> 
+                Rim Width
+              </label>
+              <label class="flex items-center gap-2.5 cursor-pointer bg-white p-2.5 rounded-xl border border-slate-200/60 hover:bg-slate-100/50 transition">
+                <input type="checkbox" class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"> 
+                Cap Depth
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contenedor 2: Historial y Visor -->
+        <div id="seccionHistorialPdf" class="hidden flex flex-col gap-4">
+          <!-- Inyectado dinámicamente -->
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- 3. FOOTER -->
+    <footer class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-bold text-slate-800 flex items-center gap-2">📊 Resumen del diagnóstico</span>
+            <span class="text-[9px] bg-slate-100 text-slate-600 font-extrabold px-2 py-0.5 rounded-md tracking-wider">EN ESPERA</span>
+          </div>
+          <div class="text-xs space-y-1.5 text-slate-500 border-t border-slate-100 pt-3">
+            <p><b>Característica:</b> -</p>
+            <p><b>Medición:</b> -</p>
+            <p><b>Especificación:</b> - / - / -</p>
+            <p id="footerDesviacionText"><b>Desviación:</b> -</p>
+            <p><b>Operación:</b> -</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-800 mb-3">
+            ⚙ Ajuste aplicado
+          </div>
+          <div class="text-xs space-y-1.5 text-slate-500 border-t border-slate-100 pt-3">
+            <p><b>Z:</b> -</p>
+            <p><b>Objetivo:</b> -</p>
+            <p><b>Afectaciones:</b> -</p>
+            <p><b>Estado del flujo:</b> En espera de selección</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-bold text-slate-800 mb-3">
+            🛞 Vista del rin y dimensiones principales
+          </div>
+          <div class="flex items-center justify-between border-t border-slate-100 pt-3">
+            <div class="flex gap-2">
+              <div class="w-12 h-12 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-400">3D</div>
+              <div class="w-12 h-12 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-400">CAD</div>
+            </div>
+            <div class="text-[11px] text-slate-600 space-y-0.5 text-right font-medium">
+              <p>Rim Width: <b class="text-slate-900">-</b></p>
+              <p>Cap Depth: <b class="text-slate-900">-</b></p>
+              <p>Offset: <b class="text-slate-900">-</b></p>
+              <p>PCD: <b class="text-slate-900">-</b></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL DE INICIO DE SESIÓN -->
+  <div id="authModal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-slate-900 text-sm">Iniciar Sesión</h3>
+        <button type="button" onclick="cerrarModalAuth()" class="text-slate-400 hover:text-slate-700 text-xs font-bold">✕</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Correo Electrónico</label>
+          <input type="email" id="loginEmail" placeholder="ej. guest@appam.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div id="passwordContainer" class="hidden">
+          <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Contraseña (Admin)</label>
+          <div class="relative flex items-center">
+            <input type="password" id="loginPassword" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 pr-9 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-blue-500" />
+            <span id="togglePasswordBtn" class="absolute right-2.5 cursor-pointer text-sm select-none" title="Mantén presionado para ver la contraseña">👁️</span>
+          </div>
+        </div>
+        <button type="button" onclick="ejecutarLoginSupabase()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-sm">
+          Entrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PARA AGREGAR NUEVO MODELO -->
+  <div id="modalNuevoModelo" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-100 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-slate-900 text-sm">Agregar Nuevo Modelo</h3>
+        <button type="button" onclick="cerrarModalNuevoModelo()" class="text-slate-400 hover:text-slate-700 text-xs font-bold">✕</button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Modelo</label>
+          <input type="text" id="nuevoModeloInput" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 font-semibold outline-none focus:ring-2 focus:ring-blue-500" readonly />
+        </div>
+        <div>
+          <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Cliente</label>
+          <input type="text" id="nuevoClienteInput" placeholder="Ingrese el cliente..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Tamaño</label>
+          <input type="text" id="nuevoTamanioInput" placeholder="Ingrese el tamaño..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <button type="button" onclick="guardarNuevoModeloSupabase()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-xl text-xs transition shadow-sm">
+          Guardar Modelo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar Lateral Desplegable para Dimensional (C01 a C36, omitiendo C31 y C32) -->
+  <div id="sidebarDimensional" class="fixed inset-y-0 right-0 z-50 w-72 bg-white shadow-2xl border-l border-slate-200 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    <div class="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+      <h3 class="font-bold text-slate-900 text-xs uppercase tracking-wider">Sidebar Dimensional</h3>
+      <button type="button" onclick="togglePanelDimensional(event)" class="text-slate-400 hover:text-slate-700 text-sm font-bold px-2 py-0.5 rounded-lg bg-white border border-slate-200">✕</button>
+    </div>
+    <div id="listaCeldasVertical" class="p-4 flex flex-col gap-2 overflow-y-auto flex-1">
+      <!-- Las celdas se inyectan dinámicamente aquí -->
+    </div>
+  </div>
+
+  <!-- Archivo JavaScript Externo Único -->
+  <script src="appmaquinado.js"></script>
+
+</body>
+</html>
